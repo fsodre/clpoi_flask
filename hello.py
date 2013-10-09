@@ -45,8 +45,7 @@ def pois_from_poi_file(poiFile):
             for i in xrange(len(poislines)/2)]
 
 
-def html(query):
-    radius = 0.5
+def html(query, radius=0.5):
     maxResults = 100
     clprefix = "sfbay"
     poiFile = "geoloc.out"
