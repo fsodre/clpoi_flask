@@ -45,7 +45,7 @@ def pois_from_poi_file(poiFile):
             for i in xrange(len(poislines)/2)]
 
 
-def html(query, radius=0.5):
+def html(query, radius=0.5, bedrooms=1):
     maxResults = 100
     clprefix = "sfbay"
     poiFile = "geoloc.out"
@@ -54,7 +54,7 @@ def html(query, radius=0.5):
     url_params = {
         'minAsk': 0,
         'maxAsk': 5000,
-        'bedrooms': 1,
+        'bedrooms': bedrooms,
         'hasPic': 1,
         'query': query,
     }
@@ -150,3 +150,15 @@ def index():
 @app.route('/q/<city>')
 def query(city):
     return html(city)
+
+@app.route('/r/<float:radius>/q/<city>')
+def radius_query(radius, city):
+    return html(city, radius=radius)
+
+@app.route('/b/<int:bedrooms>/q/<city>')
+def bedrooms_query(bedrooms, city):
+    return html(city, bedrooms=bedrooms)
+
+@app.route('/r/<float:radius>/b/<int:bedrooms>/q/<city>')
+def radius_bedrooms_query(radius, bedrooms, city):
+    return html(city, radius=radius, bedrooms=bedrooms)
