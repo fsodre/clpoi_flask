@@ -1,5 +1,4 @@
-from docopt import docopt
-from flask import Flask
+from flask import Flask, render_template, request
 from math import sin, cos, atan2, sqrt, radians
 import os
 import re
@@ -45,15 +44,14 @@ def pois_from_poi_file(poiFile):
             for i in xrange(len(poislines)/2)]
 
 
-def html(query, radius=0.5, bedrooms=1):
-    maxResults = 100
+def html(query, radius=0.5, bedrooms=1, minAsk=0, maxAsk=5000, maxResults=100):
     clprefix = "sfbay"
     poiFile = "geoloc.out"
 
     # Parameters that will be used to search craigslist
     url_params = {
-        'minAsk': 0,
-        'maxAsk': 5000,
+        'minAsk': minAsk,
+        'maxAsk': maxAsk,
         'bedrooms': bedrooms,
         'hasPic': 1,
         'query': query,
@@ -144,21 +142,9 @@ def html(query, radius=0.5, bedrooms=1):
 
 @app.route('/')
 def index():
-    return 'Use /q/querycity '
+    return render_template("form.html")
 
 
-@app.route('/q/<city>')
-def query(city):
-    return html(city)
-
-@app.route('/r/<float:radius>/q/<city>')
-def radius_query(radius, city):
-    return html(city, radius=radius)
-
-@app.route('/b/<int:bedrooms>/q/<city>')
-def bedrooms_query(bedrooms, city):
-    return html(city, bedrooms=bedrooms)
-
-@app.route('/r/<float:radius>/b/<int:bedrooms>/q/<city>')
-def radius_bedrooms_query(radius, bedrooms, city):
-    return html(city, radius=radius, bedrooms=bedrooms)
+@app.route('/res', methods=['GET'])
+def query():
+    return html(request.args.get('city', ''), float(request.args.get('radius', '1.0')), int(request.args.get('bedrooms', '1')), int(request.args.get('minAsk', '0')), int(request.args.get('maxAsk', '5000')), int(request.args.get('maxResults', '100')))
